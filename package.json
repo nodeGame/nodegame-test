@@ -1,7 +1,7 @@
 {
     "name": "nodegame-test"
     , "description": "Test package for forthcoming nodegame releases. Do not use!"
-    , "version": "4.0.2"
+    , "version": "4.0.3"
     , "homepage": "http://nodegame.org"
     , "author": "Stefano Balietti <futur.dorko@gmail.com>"
     , "contributors": [
@@ -30,7 +30,7 @@
         "nodegame-mturk": "*",
         "JSUS": "*",
         "NDDB": "*",
-        "ultimatum": "*"
+        "ultimatum-game": "*"
     }            
     , "license": "MIT"
     , "scripts": {
