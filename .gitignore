@@ -35,7 +35,6 @@ games/MiniSvo
 games/car-sharing
 games/DCL
 games_new/
-games_available/
 start/
 log/*.log
 
