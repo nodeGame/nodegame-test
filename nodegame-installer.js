@@ -310,9 +310,7 @@ function getAllGitModules(cb) {
             let module = NODEGAME_MODULES[i];
             let modulePath = path.resolve(INSTALL_DIR_MODULES, module);
             removeDirRecursive(modulePath);
-            debugger
             setTimeout(function() {
-                debugger
                 getGitModule(module, INSTALL_DIR_MODULES, function(err) {
                     if (err) {
                         throw new Error(err);
@@ -414,10 +412,11 @@ function installationFailed() {
     console.log('  ----------------------------------------------');
     console.log();
     
-    console.error('  If you think this might be a bug, please report ' +
-                  'it by opening an issue at: ' + 
-                  'https://github.com/nodeGame/nodegame/issues or by ' +
-                  'email at info@nodegame.org.');
+    console.error('  If you think this might be a bug, please report it. ' +
+                  'You can either:');
+    console.error('    - open an issue at: ' +
+                  'https://github.com/nodeGame/nodegame/issues');
+    console.error('    - send an email at info@nodegame.org');
     console.log();
 }
 
