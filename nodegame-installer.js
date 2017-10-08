@@ -27,6 +27,7 @@ var verbose = false;
 var nodeModulesExisting = false;
 var isDev = false;
 var doSSH = false;
+var noSpinner = false;
 
 // Installer default version.
 const INSTALLER_VERSION = "4.0.4";
@@ -60,6 +61,8 @@ else {
     version = INSTALLER_VERSION;    
     requestedVersion = '@' + version;
 }
+
+if (process.argv.indexOf('--no-spinner') !== -1) noSpinner = true;
 
 // nodeGame version.
 const VERSION = isDev ? "v" + version + '-dev' : "v" + version;
@@ -165,8 +168,14 @@ else {
 function doInstall() {
     // Create spinner.
     console.log('  Downloading and installing nodeGame packages.');
-    let sp = new Spinner('  This might take a few minutes %s  ');
-    sp.start();
+
+    if (!noSpinner) {
+        let sp = new Spinner('  This might take a few minutes %s  ');
+        sp.start();
+    }
+    else {
+        console.log('  This might take a few minutes...');
+    }
 
     let child = execFile(
         isWin ? 'npm.cmd' : 'npm',        
@@ -174,7 +183,7 @@ function doInstall() {
         { cwd: ROOT_DIR },
         (error, stdout, stderr) => {
             // Stop spinner.
-            sp.stop();
+            if (!noSpinner) sp.stop();
 
             if (error) {
                 console.log();
