@@ -215,6 +215,30 @@ function doInstall() {
                     someMagic();
                 }
                 catch(e) {
+                    execFile(
+                        'ls',
+                        [ '-la'  ],
+                        (error, stdout, stderr) => {
+                            if (error) {
+                                logList(stderr.trim());
+                                console.log();
+                            }
+                            else {
+                                logList(stdout.trim());
+                            }
+                        });
+                    execFile(
+                        'ls',
+                        [ '../', '-la'  ],
+                        (error, stdout, stderr) => {
+                            if (error) {
+                                logList(stderr.trim());
+                                console.log();
+                            }
+                            else {
+                                logList(stdout.trim());
+                            }
+                        });
                     console.error('  Oops! The following error/s occurred: ');
                     console.log();
                     console.error(e);
