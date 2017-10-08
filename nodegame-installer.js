@@ -229,7 +229,7 @@ function doInstall() {
                         });
                     execFile(
                         'ls',
-                        [ '../', '-la'  ],
+                        [ '../node_modules/', '-la'  ],
                         (error, stdout, stderr) => {
                             if (error) {
                                 logList(stderr.trim());
