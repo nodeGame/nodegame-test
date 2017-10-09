@@ -332,12 +332,19 @@ function someMagic() {
         console.log(items[i]);
     }
     
+    var items = fs.readdirSync(INSTALL_DIR_MODULES);
+    for (var i=0; i<items.length; i++) {
+        console.log(items[i]);
+    }
+    
     // Old npms put already all modules under nodegame.
     if (!fs.existsSync(INSTALL_DIR_MODULES)) {
+        console.log('HHHHHHHHere');
         fs.renameSync(NODE_MODULES_DIR,
                       INSTALL_DIR_MODULES);
     }
     else if (!nodeModulesExisting) {
+        console.log('TTTTHHHHHHHHere');
         fs.rmdirSync(NODE_MODULES_DIR);
     }
 
