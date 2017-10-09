@@ -327,6 +327,11 @@ function someMagic() {
                                'nodegame-test'),
                   INSTALL_DIR);
 
+    var items = fs.readdirSync(NODE_MODULES_DIR);
+    for (var i=0; i<items.length; i++) {
+        console.log(items[i]);
+    }
+    
     // Old npms put already all modules under nodegame.
     if (!fs.existsSync(INSTALL_DIR_MODULES)) {
         fs.renameSync(NODE_MODULES_DIR,
