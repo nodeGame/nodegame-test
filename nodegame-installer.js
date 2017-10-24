@@ -308,7 +308,12 @@ function printFinalInfo() {
     console.log('  ----------------------------------------------');
 
     console.log('  Enter the installation directory and start the server:');
-    console.log('    cd ' + NODEGAME_AND_VERSION);
+    if (doNotMoveInstall) {
+        console.log('    cd ' + NODEGAME_AND_VERSION);
+    }
+    else {
+        console.log('    cd ' + path.join('node_modules', MAIN_MODULE));
+    }
     console.log('    node launcher.js');
     console.log();
 
