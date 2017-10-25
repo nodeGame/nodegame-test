@@ -420,7 +420,7 @@ function getAllGitModules(cb) {
                 
                 // Remove nodegame modules (if any) will be get by git.
                 fs.readdirSync(nodeModulesPath).forEach(function(file, index) {
-                    if (J.inArray(file, NODEGAME_MODULES)) {
+                    if (inArray(file, NODEGAME_MODULES)) {
                         let modulePath = path.join(nodeModulesPath, file);
                         removeDirRecursiveSync(modulePath);
                     }
@@ -640,3 +640,14 @@ function Spinner(text) {
         readline.cursorTo(stream, 0);
     };
 };
+
+function inArray(needle, haystack) {
+    var func, i, len;
+    len = haystack.length;
+    for (i = 0; i < len; i++) {
+        if (needle === haystack[i]) {
+            return needle;
+        }
+    }
+    return false;
+}
