@@ -1,7 +1,7 @@
 {
     "name": "nodegame-test"
     , "description": "Test package for forthcoming nodegame releases. Do not use!"
-    , "version": "4.0.5"
+    , "version": "4.0.6"
     , "homepage": "http://nodegame.org"
     , "author": "Stefano Balietti <futur.dorko@gmail.com>"
     , "contributors": [
@@ -31,7 +31,11 @@
         "JSUS": "*",
         "NDDB": "*",
         "ultimatum-game": "*"
-    }            
+    }
+    , "devDependencies": {
+        "mocha": ">= 2.1.0",
+        "should": ">= 5.0.0"
+    }
     , "license": "MIT"
     , "scripts": {
         "start": "node launcher.js"
