@@ -417,18 +417,29 @@ function getAllGitModules(cb) {
 
             // Keep node_modules, if any.
             if (fs.existsSync(nodeModulesPath)) {
+                
+                // Remove nodegame modules (if any) will be get by git.
+                fs.readdirSync(nodeModulesPath).forEach(function(file, index) {
+                    if (J.inArray(file, NODEGAME_MODULES)) {
+                        let modulePath = path.join(nodeModulesPath, file);
+                        removeDirRecursiveSync(modulePath);
+                    }
+                });
+                
                 nodeModulesCopy = path.resolve(NODE_MODULES_DIR,
                                                ('_node_modules-' + module));
                 fs.renameSync(nodeModulesPath, nodeModulesCopy);
             }
-            removeDirRecursiveSync(modulePath);
 
+            // Remove npm folder.
+            removeDirRecursiveSync(modulePath);
+            
             setTimeout(function() {
                 getGitModule(module, INSTALL_DIR_MODULES, function(err) {
                     if (err) throw new Error(err);                    
                     // Put back node_modules, if it was copied before.
                     if (nodeModulesCopy) {
-                        fs.rename(nodeModulesCopy, nodeModulesPath);
+                        fs.renameSync(nodeModulesCopy, nodeModulesPath);
                     }
                     counter--;
                     if (counter == 0 && cb) cb();
