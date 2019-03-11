@@ -30,7 +30,9 @@
         "nodegame-mturk": "*",
         "JSUS": "*",
         "NDDB": "*",
-        "ultimatum-game": "*"
+        "ultimatum-game": "*",
+	"socket.io": "2.2.0",
+	"express": "2.16.4"
     }
     , "license": "MIT"
     , "scripts": {
