@@ -1,7 +1,7 @@
 {
     "name": "nodegame-test"
     , "description": "Test package for forthcoming nodegame releases. Do not use!"
-    , "version": "5.0.1"
+    , "version": "5.0.2"
     , "homepage": "http://nodegame.org"
     , "author": "Stefano Balietti <futur.dorko@gmail.com>"
     , "contributors": [
