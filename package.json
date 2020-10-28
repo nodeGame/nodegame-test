@@ -1,7 +1,7 @@
 {
     "name": "nodegame-test"
     , "description": "Test package for forthcoming nodegame releases. Do not use!"
-    , "version": "6.0.0"
+    , "version": "6.0.2"
     , "homepage": "http://nodegame.org"
     , "author": "Stefano Balietti <futur.dorko@gmail.com>"
     , "contributors": [
@@ -29,10 +29,10 @@
         "nodegame-requirements": "*",
         "nodegame-game-template": "*",
         "nodegame-monitor": "*",
+        "nodegame-mturk": "*",
         "nodegame-db": "*",
         "nodegame-mongodb": "*",
         "nodegame-generator": "*",
-        "nodegame-mturk": "*",
         "JSUS": "*",
         "NDDB": "*",
         "ultimatum-game": "*"
