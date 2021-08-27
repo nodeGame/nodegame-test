@@ -1,7 +1,7 @@
 {
     "name": "nodegame-test"
     , "description": "Test package for forthcoming nodegame releases. Do not use!"
-    , "version": "7.0.1"
+    , "version": "7.0.2"
     , "homepage": "http://nodegame.org"
     , "author": "Stefano Balietti <futur.dorko@gmail.com>"
     , "contributors": [
@@ -18,7 +18,6 @@
         "commander": "*",
         "fs-extra": "*",
         "smoosh": "0.4.0",
-        "nodegame": "*",
         "nodegame-server": "*",
         "nodegame-client": "*",
         "nodegame-window": "*",
