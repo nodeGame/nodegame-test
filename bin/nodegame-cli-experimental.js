@@ -11,6 +11,9 @@
 
 "use strict";
 
+console.log('not ready yet!');
+return;
+
 // Modules.
 const fs = require('fs-extra');
 const path = require('path');
@@ -35,7 +38,7 @@ const NODEGAME_MODULES = [
     'nodegame-window', 'nodegame-widgets',
     'nodegame-monitor', 'nodegame-game-template',
     'nodegame-requirements', 'nodegame-generator',
-    'JSUS', 'NDDB'
+    'NDDB', 'JSUS'
 ];
 const N_MODULES = NODEGAME_MODULES.length;
 

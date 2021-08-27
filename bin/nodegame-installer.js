@@ -32,16 +32,16 @@ const warn = txt => {
     console.error('  Warning: ' + txt);
 };
 
-const MAIN_MODULE = 'nodegame';
-const MAIN_MODULE = 'nodegame-test';
+// const MAIN_MODULE = 'nodegame';
+let MAIN_MODULE = 'nodegame';
 
 // All stable versions.
 // Versions below < 3 are not available.
 const STABLE_VERSIONS = {
     v3: '3.5.3',
     v4: '4.3.3',
-    v5: '5.11.0',
-    v6: '6.0.0'
+    v5: '5.11.2',
+    v6: '6.3.0'
 };
 
 const AVAILABLE_VERSIONS = Object.keys(STABLE_VERSIONS).concat(['dev']);
@@ -52,11 +52,6 @@ const INSTALLER_VERSION = 'v6';
 // If node_modules folders are detected, their paths (without node_modules)
 // is stored in here.
 var parentNodeModules;
-
-var rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
 
 // The actual version being installed, user can change it.
 var version = STABLE_VERSIONS[INSTALLER_VERSION];
@@ -81,6 +76,12 @@ else if (p === '--version' || p === '-v') {
     return;
 }
 
+var rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+var alpha = false;
 var verbose = false;
 var nodeModulesExisting = false;
 var isDev = false;
@@ -92,6 +93,9 @@ var noParentDirCheck;
 var branch;
 var warnings;
 var dry;
+
+// Add default games in games/ and games_available/.
+var addGames = true;
 
 // User requested version.
 var requestedVersion = '@' + version;
@@ -106,6 +110,13 @@ for (let i = 0; i < process.argv.length; i++) {
             isDev = true;
             requestedVersion = '@' + version;
 
+
+            MAIN_MODULE = 'nodegame-test';
+
+            version = '7.0.4';
+            requestedVersion = '@' + version;
+
+            alpha = true;
         }
         else {
             version = STABLE_VERSIONS[requestedVersion];
@@ -142,6 +153,9 @@ for (let i = 0; i < process.argv.length; i++) {
     else if (option === '--dry') {
         dry = true;
     }
+    else if (option === '--no-games') {
+        addGames = false;
+    }
 }
 
 if ((doSSH || branch) && !isDev) {
@@ -152,7 +166,7 @@ if ((doSSH || branch) && !isDev) {
 // nodeGame version.
 const VERSION = isDev ? "v" + version + '-dev' : "v" + version;
 
-const NODEGAME_AND_VERSION = 'nodegame-' + VERSION;
+const NODEGAME_AND_VERSION = 'nodegame-' + VERSION + (alpha ? '-alpha' : '');
 
 const ROOT_DIR = process.cwd()
 const NODE_MODULES_DIR = path.resolve(ROOT_DIR, 'node_modules');
@@ -190,7 +204,6 @@ const NODEGAME_MODULES = [
     'JSUS', 'NDDB',
     'ultimatum-game'
 ];
-const N_MODULES = NODEGAME_MODULES.length;
 
 const GAMES_AVAILABLE_DIR = path.resolve(INSTALL_DIR,
                                          'games_available');
@@ -215,8 +228,8 @@ printInstallInfo();
 
 // Check node version is.
 var nodeVersion = process.versions.node.split('.');
-if (parseInt(nodeVersion[0], 10) < 4) {
-    err('node version >= 4.x is required.\n' +
+if (parseInt(nodeVersion[0], 10) < 10) {
+    err('node version >= 10.x is required.\n' +
         'Please upgrade your Node.Js installation, ' +
         'visit: http://nodejs.org');
     installationAborted();
@@ -268,7 +281,7 @@ else checkParentNodeModules();
 // Helper functions.
 ///////////////////////////////////////////////////////////////////////////////
 
-function checkParentNodeModules(cb) {
+function checkParentNodeModules() {
     parentNodeModules = getParentNodeModules();
 
     // Check if a node_modules folder exists in any folder from the one above.
@@ -418,10 +431,18 @@ function checkGitExists(cb) {
 
 function printNodeGameInfo() {
     log();
-    log('***********************************************  ');
-    log('**   WELCOME TO NODEGAME INSTALLER  v' + version +
-        '   **  ');
-    log('***********************************************  ');
+    if (alpha) {
+        log('*****************************************************  ');
+        log('**   WELCOME TO NODEGAME INSTALLER  v' + version +
+            (alpha ? '-alpha' : '') + '   **  ');
+        log('*****************************************************  ');
+    }
+    else {
+        log('***********************************************  ');
+        log('**   WELCOME TO NODEGAME INSTALLER  v' + version + '   **  ');
+        log('***********************************************  ');
+    }
+
     log();
     log('nodeGame: fast, scalable JavaScript for online, large-scale,');
     log('multiplayer, real-time games and experiments in the browser.');
@@ -513,25 +534,37 @@ function someMagic(cb) {
     if (!fs.existsSync(path.resolve(mainNgDir, 'private'))) {
         fs.mkdirSync(path.resolve(mainNgDir, 'private'));
     }
+    if (!fs.existsSync(path.resolve(mainNgDir, 'export'))) {
+        fs.mkdirSync(path.resolve(mainNgDir, 'export'));
+    }
 
     if (!doNotMoveInstall) {
         // Move nodegame folder outside node_modules.
         fs.renameSync(mainNgDir, INSTALL_DIR);
 
-        // Old npms put already all modules under nodegame.
-        if (!fs.existsSync(INSTALL_DIR_MODULES)) {
-            fs.renameSync(NODE_MODULES_DIR,
-                          INSTALL_DIR_MODULES);
+        try {
+            // Old npms put already all modules under nodegame.
+            if (!fs.existsSync(INSTALL_DIR_MODULES)) {
+                fs.renameSync(NODE_MODULES_DIR,
+                              INSTALL_DIR_MODULES);
+            }
+            else if (!nodeModulesExisting) {
+                fs.rmdirSync(NODE_MODULES_DIR);
+            }
         }
-        else if (!nodeModulesExisting) {
-            fs.rmdirSync(NODE_MODULES_DIR);
+        catch(e) {
+            let keep = nodeModulesExisting;
+            moveFolderSync(NODE_MODULES_DIR, INSTALL_DIR_MODULES, keep);
         }
     }
 
     if (isDev) {
         getAllGitModules(function() {
-            // Move games from node_modules.
-            copyGameFromNodeModules('ultimatum-game');
+
+            if (addGames) {
+                // Move games from node_modules.
+                copyGameFromNodeModules('ultimatum-game');
+            }
 
             // Generator.
             fixGenerator();
@@ -546,8 +579,11 @@ function someMagic(cb) {
         });
     }
     else {
-        // Move games from node_modules.
-        copyGameFromNodeModules('ultimatum-game');
+
+        if (addGames) {
+            // Move games from node_modules.
+            copyGameFromNodeModules('ultimatum-game');
+        }
 
         // Generator.
         fixGenerator();
@@ -568,17 +604,15 @@ function fixGenerator() {
                           'nodegame-generator',
                           'bin', 'nodegame'),
              path.resolve(INSTALL_DIR, 'bin', 'nodegame'),
-	     'file');
+             'file');
 
     fs.writeFileSync(path.resolve(INSTALL_DIR_MODULES,
-				  'nodegame-generator',
-				  'conf',
-				  'generator.conf.json'),
-		     JSON.stringify({
-			 author: "",
-			 email: "",
-			 ngDir: INSTALL_DIR
-		     }, 4));
+                    'nodegame-generator', 'conf', 'generator.conf.json'),
+                    JSON.stringify({
+                        author: "",
+                        email: "",
+                        ngDir: INSTALL_DIR
+                    }, 4));
 }
 
 function getAllGitModules(cb) {
@@ -621,9 +655,9 @@ function getAllGitModules(cb) {
                         fs.renameSync(nodeModulesCopy, nodeModulesPath);
                     }
                     // Copy pre-commit hook.
-                    copyFileSync(gitPrecommitHook,
-                                 path.resolve(modulePath, '.git', 'hooks',
-                                              'pre-commit'));
+                    fs.copyFileSync(gitPrecommitHook,
+                                    path.resolve(modulePath, '.git', 'hooks',
+                                                'pre-commit'));
                     counter--;
                     if (counter == 0 && cb) cb();
                 });
@@ -732,7 +766,7 @@ function removeDirRecursiveSync(dir) {
         });
         fs.rmdirSync(dir);
     }
-};
+}
 
 function getParentNodeModules() {
     let tks = ROOT_DIR.split(path.sep);
@@ -824,27 +858,26 @@ function installationFailed() {
 
 function printHelp() {
     log();
-    log('@<version>              Install a specific version (v3, v4, v5)');
-    log('@dev                    Install latest nodeGame from git repos');
-    log('    --branch <name>         Checkout this branch on all git repos');
-    log('    --ssh                   Use ssh to get all git repos');
-    log('--yes                   Answer yes to all questions');
-    log('--install-dir <dirname> Set the name of the installation directory;');
+    log('@<version>              Installs a specific version (v3, v4, v5, v6)');
+    log('@dev                    Installs latest nodeGame from git repos');
+    log('--branch <name>         Checkouts this branch on all git repos');
+    log('--ssh                   Uses ssh to get all git repos');
+    log('--yes                   Answers yes to all questions');
+    log('--install-dir <dirname> Sets the name of the installation directory;');
     log('                        if equals to node_modules, the npm structure');
     log('                        stays unchanged');
     log('--no-spinner            Does not start the spinner');
     log('--dry                   Does not actually install anything');
     log('--list-versions         Lists stable versions');
-    log('--version               Print installer version');
-    log('--help                  Print this help');
+    log('--no-games              Does not install default games');
+    log('--version               Prints installer version');
+    log('--help                  Prints this help');
     log();
 }
 
 // Kudos: cli-spinner package.
 
 function Spinner(text) {
-    var that;
-    that = this;
 
     this.spinners = [
         "|/-\\",
@@ -914,10 +947,10 @@ function Spinner(text) {
         readline.clearLine(stream, 0);
         readline.cursorTo(stream, 0);
     };
-};
+}
 
 function inArray(needle, haystack) {
-    var func, i, len;
+    var i, len;
     len = haystack.length;
     for (i = 0; i < len; i++) {
         if (needle === haystack[i]) {
@@ -927,75 +960,22 @@ function inArray(needle, haystack) {
     return false;
 }
 
+function moveFolderSync(from, to, copy) {
+    if (!fs.existsSync(to)) fs.mkdirSync(to);
+    fs.readdirSync(from).forEach(element => {
 
+        let fileFrom = path.join(from, element);
+        let fileTo = path.join(to, element);
 
-// Kudos. Adapted from:
-// https://github.com/coderaiser/
-// fs-copy-file-sync/blob/master/lib/fs-copy-file-sync.js
-function _copyFileSync(src, dest, flag) {
-    const SIZE = 65536;
+        if (fs.lstatSync(fileFrom).isFile()) {
+            if (copy) fs.copyFileSync(fileFrom, fileTo);
+            else fs.renameSync(fileFrom, fileTo);
+        }
+        else {
+            moveFolderSync(fileFrom, fileTo);
+        }
+    });
+    // ALl files moved, removed dir.
+    if (!copy) fs.rmdirSync(from);
 
-    const COPYFILE_EXCL = 1;
-    const COPYFILE_FICLONE = 2;
-    const COPYFILE_FICLONE_FORCE = 4;
-
-    const constants = {
-        COPYFILE_EXCL,
-        COPYFILE_FICLONE,
-        COPYFILE_FICLONE_FORCE,
-    };
-
-    const isNumber = (a) => typeof a === 'number';
-    const or = (a, b) => a | b;
-    const getValue = (obj) => (key) => obj[key];
-
-    const getMaxMask = (obj) => Object
-          .keys(obj)
-          .map(getValue(obj))
-          .reduce(or);
-
-    const MAX_MASK = getMaxMask(constants);
-    const isExcl = (flags) => flags & COPYFILE_EXCL;
-
-
-    const writeFlag = isExcl(flag) ? 'wx' : 'w';
-
-    const {
-        size,
-        mode,
-    } = fs.statSync(src);
-
-    const fdSrc = fs.openSync(src, 'r');
-    const fdDest = fs.openSync(dest, writeFlag, mode);
-
-    const length = size < SIZE ? size : SIZE;
-
-    let pos = 0;
-    const peaceSize = size < SIZE ? 0 : size % SIZE;
-    const offset = 0;
-
-    let buffer = Buffer.allocUnsafe(length);
-    for (let i = 0; length + pos + peaceSize <= size; i++, pos = length * i) {
-        fs.readSync(fdSrc, buffer, offset, length, pos);
-        fs.writeSync(fdDest, buffer, offset, length, pos);
-    }
-
-    if (peaceSize) {
-        const length = peaceSize;
-        buffer = Buffer.allocUnsafe(length);
-        fs.readSync(fdSrc, buffer, offset, length, pos);
-        fs.writeSync(fdDest, buffer, offset, length, pos);
-    }
-
-    fs.closeSync(fdSrc);
-    fs.closeSync(fdDest);
-}
-
-function copyFileSync(from, to) {
-    if ('function' === typeof fs.copyFileSync) {
-        fs.copyFileSync(from, to);
-    }
-    else {
-        _copyFileSync(from, to);
-    }
 }
