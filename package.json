@@ -18,20 +18,20 @@
         "commander": "*",
         "fs-extra": "*",
         "smoosh": "0.4.0",
-        "nodegame-server": "github:nodeGame/nodegame-server",
-        "nodegame-client": "github:nodeGame/nodegame-client",
-        "nodegame-window": "*",
-        "nodegame-widgets": "*",
-        "nodegame-requirements": "*",
-        "nodegame-game-template": "*",
-        "nodegame-monitor": "*",
-        "nodegame-mturk": "*",
+        "nodegame-server": ">=7.0.0",
+        "nodegame-client": ">=7.0.0",
+        "nodegame-window": ">=7.0.0",
+        "nodegame-widgets": ">=7.0.0",
+        "nodegame-requirements": ">=7.0.0",
+        "nodegame-game-template": ">=7.0.0",
+        "nodegame-monitor": ">=7.0.0",
+        "nodegame-mturk": ">=7.0.0",
+        "nodegame-generator": ">=7.0.0",
+        "ultimatum-game": ">=7.0.0",
         "nodegame-db": "*",
         "nodegame-mongodb": "*",
-        "nodegame-generator": "*",
         "JSUS": "*",
-        "NDDB": "*",
-        "ultimatum-game": "*"
+        "NDDB": ">=3.0.0"
     }
     , "license": "MIT"
     , "scripts": {
