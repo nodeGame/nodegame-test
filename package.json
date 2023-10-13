@@ -29,8 +29,6 @@
         "nodegame-generator": "git+https://github.com/nodegame/nodegame-generator#v8",
         "ultimatum-game": "git+https://github.com/nodegame/survey#v8",
         "survey": "git+https://github.com/nodegame/survey#v8",
-        "nodegame-db": "*",
-        "nodegame-mongodb": "*",
         "JSUS": "*",
         "NDDB": ">=3.0.0"
     }
